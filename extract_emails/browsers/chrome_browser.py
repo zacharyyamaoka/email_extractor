@@ -42,6 +42,7 @@ class ChromeBrowser(BrowserInterface):
         self._driver = webdriver.Chrome(
             options=self._chrome_options, executable_path=self.executable_path
         )
+        self._driver.set_page_load_timeout(5)
 
     def close(self):
         self._driver.close()
@@ -49,9 +50,17 @@ class ChromeBrowser(BrowserInterface):
 
     def _get(self, url: str) -> bool:
         try:
+            # self._driver.execute(Command.SET_TIMEOUTS, {
+            #     'ms': float(10 * 1000),
+            #     'type': 'page load'})
             self._driver.get(url)
+            # self._driver.executeScript(
+            #     "window.location.href='http://www.sina.com.cn'")
+            # self._driver.get(url)
             return True
         except:
+            print("TIMED OUT")
+            # TimeoutException
             return False
 
     def get_page_source(self, url: str) -> str:

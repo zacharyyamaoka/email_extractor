@@ -1,5 +1,5 @@
 from typing import List, Set
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, urlsplit
 
 from extract_emails.link_filters import LinkFilterInterface
 
@@ -20,15 +20,18 @@ class ContactInfoLinkFilter(LinkFilterInterface):
         # if there are not any urls after filtering by contactinfo candidates
         self.use_default = kwargs.get('use_default', False)
         self._contruct_candidates()
+        parts = urlsplit(website_address)
+        self.website_name = parts.netloc
 
     def _contruct_candidates(self):
-        self.candidates = ['about', 'about-us', 'aboutus', 'contact', 'contact-us', 'contactus']
+        self.candidates = ['about', 'about-us', 'aboutus',
+                           'contact', 'contact-us', 'contactus', 'location', 'the-team', 'get-in-contact']
 
     def filter(self, links: List[str]) -> List[str]:
         filtered_urls = []
         for url in links:
             url = urljoin(self.website, url)
-            if url.startswith(self.website) and url not in self.checked_links:
+            if self.website_name in url and url not in self.checked_links:
                 self.checked_links.add(url)
                 filtered_urls.append(url)
 

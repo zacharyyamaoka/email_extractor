@@ -7,6 +7,7 @@ from extract_emails.browsers import BrowserInterface
 from extract_emails.html_handlers import DefaultHTMLHandler
 from extract_emails.email_filters import DefaultEmailFilter
 from extract_emails.link_filters import DefaultLinkFilter, ContactInfoLinkFilter
+from urllib.parse import urlsplit
 
 FILTERS = {0: DefaultLinkFilter, 1: ContactInfoLinkFilter}
 
@@ -36,7 +37,8 @@ class EmailExtractor:
             link_filter: int = 0,
             **kwargs
     ):
-        self.website = website_url
+        parts = urlsplit(website_url)
+        self.website = "{0.scheme}://{0.netloc}".format(parts)
         self.browser = browser
         self.depth = depth
         self.max_links_from_page = max_links_from_page
@@ -45,7 +47,6 @@ class EmailExtractor:
         self._checked_links: List[str] = []
         self._emails: List[Email] = []
         self._current_depth: int = 0
-
         self.html_handler = DefaultHTMLHandler()
         self.links_filter = FILTERS[link_filter](self.website, **kwargs)
         self.emails_filter = DefaultEmailFilter()
@@ -63,13 +64,15 @@ class EmailExtractor:
         return self.get_emails()
 
     def _get_emails(self, url: str):
+        self.browser.open()
         page_source = self.browser.get_page_source(url)
-
+        self.browser.close()
         emails = self.html_handler.get_emails(page_source)
         filtered_emails = self.emails_filter.filter(emails)
         self._emails.extend([Email(email, url) for email in filtered_emails])
 
         links = self.html_handler.get_links(page_source)
+
         filtered_links = self.links_filter.filter(links)
         if self.max_links_from_page != -1:
             filtered_links = filtered_links[: self.max_links_from_page]
