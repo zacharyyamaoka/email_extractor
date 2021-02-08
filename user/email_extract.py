@@ -5,12 +5,12 @@ import numpy as np
 from googlesearch import search
 from urllib.parse import urlsplit
 
-file_name = "maxpages.csv"
-root = "/Users/zachyamaoka/Dropbox/Projects/Face Mask/MARKETING/SCRAPING/inputs/"
+file_name = "ontario_dentist_page=[289-599].csv"
+root = "~/Google Drive/My Drive/Ambience/Commerical/Contacts/ratemd csv files/Canada/Ontario/"
 data = pd.read_csv(root+file_name)
 
 browser = ChromeBrowser(
-    executable_path="/Users/zachyamaoka/Documents/chromedriver")
+    executable_path="~/Documents/email_extractor/user/chromedriver")
 num_people = data.shape[0]
 website_to_try = 3
 

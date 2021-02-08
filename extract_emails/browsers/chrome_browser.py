@@ -42,7 +42,7 @@ class ChromeBrowser(BrowserInterface):
         self._driver = webdriver.Chrome(
             options=self._chrome_options, executable_path=self.executable_path
         )
-        self._driver.set_page_load_timeout(5)
+        self._driver.set_page_load_timeout(15)
 
     def close(self):
         self._driver.close()
@@ -77,5 +77,10 @@ class ChromeBrowser(BrowserInterface):
         """
         is_get = self._get(url)
         if is_get:
-            return self._driver.page_source
+            try:
+                source = self._driver.page_source
+                return source
+            except:
+                print("CRITICAL ERROR")
+                return ""
         return ""

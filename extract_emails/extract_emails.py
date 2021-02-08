@@ -64,11 +64,12 @@ class EmailExtractor:
         return self.get_emails()
 
     def _get_emails(self, url: str):
-        self.browser.open()
         page_source = self.browser.get_page_source(url)
-        self.browser.close()
         emails = self.html_handler.get_emails(page_source)
+        if page_source == "":
+            emails.append("timeout@gmail.com")
         filtered_emails = self.emails_filter.filter(emails)
+
         self._emails.extend([Email(email, url) for email in filtered_emails])
 
         links = self.html_handler.get_links(page_source)
