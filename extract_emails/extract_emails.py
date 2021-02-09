@@ -73,8 +73,11 @@ class EmailExtractor:
         self._emails.extend([Email(email, url) for email in filtered_emails])
 
         links = self.html_handler.get_links(page_source)
+        print("RAW: ", links)
 
         filtered_links = self.links_filter.filter(links)
+        print("FILTER: ", filtered_links)
+
         if self.max_links_from_page != -1:
             filtered_links = filtered_links[: self.max_links_from_page]
         for fl in filtered_links:

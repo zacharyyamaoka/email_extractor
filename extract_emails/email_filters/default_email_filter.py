@@ -13,6 +13,8 @@ class DefaultEmailFilter(EmailFilterInterface):
     def __init__(self):
         self.checked_emails: Set[str] = set()
         self.black_list = ['wix.com', 'sentry.wixpress.com']
+        self.adress_black_list = ["yourname", "name", "your"]
+
     def filter(self, emails: List[str]) -> List[str]:
         """
         Remove duplicates and filter by domain
@@ -21,9 +23,23 @@ class DefaultEmailFilter(EmailFilterInterface):
         :return: List of emails
         """
         filtered_emails = []
+        print(emails)
         for email in emails:
+            email = email.replace('/', '')
+            split_email = email.split("@")
+            site = split_email[-1]
+            adress = split_email[0]
+            if adress in self.adress_black_list:
+                continue
+            if adress == ['nfo']:
+                email = "info@"+site
+            if adress == ['entist']:
+                email = "dentist@"+site
+            if adress == ['entists']:
+                email = "dentists@"+site
+            if adress == ['eception']:
+                email = "reception@"+site
             domain = "." + email.split(".")[-1]
-            site = email.split("@")[-1]
             if domain not in TOP_LEVEL_DOMAINS:
                 continue
             if email in self.checked_emails:
